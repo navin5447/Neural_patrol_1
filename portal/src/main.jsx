@@ -12,7 +12,18 @@ const caseData = {
   status: 'SEALED FOR FSL CONFIRMATION'
 };
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://neural-patrol-1.onrender.com';
+
 function App() {
+  const [apiStatus, setApiStatus] = React.useState('Checking backend...');
+
+  React.useEffect(() => {
+    fetch(`${API_BASE_URL}/health`)
+      .then((res) => res.json())
+      .then((data) => setApiStatus(`API Live: ${data.service || 'SpeciesTrace'}`))
+      .catch(() => setApiStatus('API Standby'));
+  }, []);
+
   return (
     <div className="portal-shell">
       <aside className="sidebar">
@@ -28,11 +39,12 @@ function App() {
       <main className="main-panel">
         <header className="topbar">
           <div>
-            <p className="eyebrow">AUTHORIZED FSL</p>
+            <p className="eyebrow">AUTHORIZED FSL &bull; <span style={{ color: '#10b981', fontWeight: 600 }}>{apiStatus}</span></p>
             <h1>Case Overview</h1>
           </div>
           <button className="primary-button">Record Confirmatory Result</button>
         </header>
+
 
         <section className="summary-grid">
           <div className="card">
