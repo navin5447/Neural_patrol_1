@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: speciestrace-backend
+    restart: unless-stopped
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    environment:
+      - ENVIRONMENT=${ENVIRONMENT:-production}
+      - SECRET_KEY=${SECRET_KEY:-dev-secret-key-change-me-in-production}
+      - DATABASE_URL=${DATABASE_URL:-sqlite:////app/data/speciestrace.db}
+      - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES:-1440}
+    volumes:
+      - backend_data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - speciestrace-network
+
+  portal:
+    build:
+      context: ./portal
+      dockerfile: Dockerfile
+    container_name: speciestrace-portal
+    restart: unless-stopped
+    ports:
+      - "${PORTAL_PORT:-3000}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - speciestrace-network
+
+networks:
+  speciestrace-network:
+    driver: bridge
+
+volumes:
+  backend_data:
+    driver: local

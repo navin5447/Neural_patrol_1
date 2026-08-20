@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 
+from app.config import settings
 from app.database import Base, SessionLocal, engine, get_db
 from app import models, schemas
 from app.demo_seed import seed_demo_data
@@ -14,14 +15,18 @@ from app.security import create_access_token, decode_access_token, hash_password
 Base.metadata.create_all(bind=engine)
 seed_demo_data()
 
+origins = [o.strip() for o in settings.allowed_origins.split(",")] if settings.allowed_origins != "*" else ["*"]
+
 app = FastAPI(title="SpeciesTrace API", version="0.1.0")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 security = HTTPBearer()
+
 
 
 def get_current_user(
@@ -357,3 +362,9 @@ def get_dashboard_summary(db: Session = Depends(get_db), user: models.User = Dep
 @app.get("/")
 def root():
     return {"message": "SpeciesTrace API is operational."}
+
+
+@app.get("/health")
+def health_check():
+    return {"status": "ok", "service": "speciestrace-backend"}
+

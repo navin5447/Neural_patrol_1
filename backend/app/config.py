@@ -6,6 +6,7 @@ class Settings(BaseSettings):
     environment: str = "development"
     database_url: str = "sqlite:///./speciestrace.db"
     secret_key: str = "dev-secret-key-change-me"
+    allowed_origins: str = "*"
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 60 * 24
 
