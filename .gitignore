@@ -1,0 +1,26 @@
+# Claude Code local session state
+.claude/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.db
+
+# Node / React (portal)
+portal/node_modules/
+portal/dist/
+
+# Flutter (mobile) — see mobile/.gitignore for the full nested-platform list
+mobile/build/
+mobile/.dart_tool/
+mobile/android/
+mobile/ios/
+mobile/web/
+mobile/*.iml
+
+# IDE
+.idea/
+.vscode/
+*.iml
